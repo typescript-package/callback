@@ -1,65 +1,69 @@
+// Class.
+import { ValidationCallbacks } from './validation-callbacks.class';
 // Type.
 import {
   AsyncCallback,
   ErrorCallback,
+  ErrorMessage,
   FailureCallback,
   StatusCallback,
   SuccessCallback,
   ValidationCallback
-} from '../type';
+} from '@typedly/callback';
 /**
  * @description Manages the callback function of `CommonCallback`.
  * @export
  * @class Callback
- * @template [Value=unknown] 
- * @template [Result=any] 
  * @template {object} [Payload=object] 
  * @template [Return=any] 
+ * @template [Value=unknown] 
+ * @template [Result=any] 
  */
 export class Callback<
+  Payload extends object = object,
+  Return = any,
   Value = unknown,
   Result = any,
-  Payload extends object = object,
-  Return = any
 > {
-  public static defineAsync<Return = boolean, Value = unknown, Result = any, Payload extends object = object>(
-    callback: AsyncCallback<Value, Result, Payload, Return>,
+  public static defineAsync<Result = any, Value = unknown, Payload = unknown, Return = unknown>(
+    callback: AsyncCallback<Result, Value, Payload, Return>,
     defaultPayload?: Payload
-  ): AsyncCallback<Value, Result, Payload, Return> {
+  ): AsyncCallback<Result, Value, Payload, Return> {
     return async (result: Result, value: Value, payload: Payload = {} as Payload) => 
       callback(result, value, {...(defaultPayload || {}), ...payload});
   }
 
   public static defineError<
-    Value = any,
+    Context = unknown,
     Payload extends object = object,
-    Message extends string | ((value: Value, payload: Payload) => string) = string,
+    Return = void,
+    Message = string | ErrorMessage<Context, Payload>,
     Type extends typeof Error = typeof Error,
   >(
     error: Type,
     message: Message,
     throwOnState: boolean = false,
-    callback: ErrorCallback<Value, Payload, Message, Type>,
+    callback: ErrorCallback<Context, Payload, Return, Type>,
     defaultPayload?: Payload
-  ): ErrorCallback<Value, Payload, Message, Type> {
-    return (result: boolean, value: Value, payload: Payload = {} as Payload) => {
-      const state = callback(result, value, {...(defaultPayload || {}), ...payload});
+  ): ErrorCallback<Context, Payload, Return, Type> {
+    return (context: Context, payload: Payload = {} as Payload) => {
+      const state = callback(context, {...(defaultPayload || {}), ...payload});
       if (state === throwOnState) {
-        throw new error(message as string);
+        throw new error(typeof message === "function" ? message(context, payload) : message);
       }
       return state;
     }
   }
 
-  public static defineFailure<Value, Payload extends object = object, Return = false>(
-    callback: FailureCallback<Value, Payload, Return>,
+  public static defineFailure<Value = unknown, Payload = unknown>(
+    callback: FailureCallback<Value, Payload>,
     defaultPayload?: Payload
-  ): FailureCallback<Value, Payload, Return> {
-    return (value: Value, payload: Payload = {} as Payload): Return =>
+  ): FailureCallback<Value, Payload> {
+    return (value: Value, payload: Payload = {} as Payload): void =>
       callback(value, { ...(defaultPayload || {}), ...payload })
   }
 
-  public static defineStatus<Status, Value = any, Payload extends object = object, Return = Status>(
+  public static defineStatus<Status, Value = unknown, Payload = unknown, Return = Status>(
     callback: StatusCallback<Status, Value, Payload, Return>,
     defaultPayload?: Payload
   ): StatusCallback<Status, Value, Payload, Return> {
@@ -67,58 +71,56 @@ export class Callback<
       callback(status, value, {...(defaultPayload || {}), ...payload});
   }
 
-  public static defineSuccess<Value, Payload extends object = object, Return = true>(
-    callback: SuccessCallback<Value, Payload, Return>,
+  public static defineSuccess<Value = unknown, Payload = unknown>(
+    callback: SuccessCallback<Value, Payload>,
     defaultPayload?: Payload
-  ): SuccessCallback<Value, Payload, Return> {
-    return (value: Value, payload: Payload = {} as Payload): Return =>
+  ): SuccessCallback<Value, Payload> {
+    return (value: Value, payload: Payload = {} as Payload): void =>
       callback(value, { ...(defaultPayload || {}), ...payload })
   }
 
-  public static defineValidation<Value, Payload extends object = object, Return = boolean>(
-    callback: ValidationCallback<Value, Payload, Return>,
+  public static defineValidation<Value = unknown, Payload = unknown>(
+    callback: ValidationCallback<Value, Payload>,
     defaultPayload?: Payload
-  ): ValidationCallback<Value, Payload, Return> {
-    return (result: boolean, value: Value, payload: Payload = {} as Payload): Return => 
+  ): ValidationCallback<Value, Payload> {
+    return (result: boolean, value: Value, payload: Payload = {} as Payload) => 
       callback(result, value, {...(defaultPayload || {}), ...payload});
   }
 
-  public static setValidation<Value, Payload extends object = object, Return = boolean>(
-    callback: ValidationCallback<Value, Payload, Return>,
+  public static setValidation<Value = unknown, Payload = unknown>(
+    name: string,
+    callback: ValidationCallback<Value, Payload>,
     defaultPayload?: Payload
   ): typeof Callback {
-    this.#validation = (result: boolean, value: Value, payload: Payload = {} as Payload): Return => 
-      callback(result, value, {...(defaultPayload || {}), ...payload});
+    this.validation.set(name, false, Callback.defineValidation<Value, Payload>(callback, defaultPayload));
     return this;
   }
 
-  static #validation: ValidationCallback<any, any, any>;
-  
+  private static validation = new ValidationCallbacks();
+
+  #name: string;
   #payload: Payload;
-  #result: Result;
-  #value: Value;
-    
+  #result?: Result;
+  #value?: Value;
+
   constructor(
-    type: 'async' | 'validation',
-    result: Result,
-    value: Value,
+    name: string,
+    result?: Result,
+    value?: Value,
     payload: Payload = {} as Payload,
   ) {
-    this.#result = result;
-    this.#value = value;
+    this.#name = name;
     this.#payload = payload;
-    type === 'validation' && Callback.#validation(result as boolean, value, payload);
+    result && (this.#result = result);
+    value && (this.#value = value);
   }
 
   public validation(
-    callback: ValidationCallback<Value, Payload, Return> = Callback.#validation,
-    defaultPayload?: Payload
- ): this {
-    Callback.defineValidation<Value, Payload, Return>(callback, defaultPayload)(
-      this.#result as boolean,
-      this.#value,
-      this.#payload
-    );
-    return this;
+    name: string = this.#name,
+    result: Result = this.#result || false as Result,
+    value: Value = this.#value || undefined as Value,
+    payload: Payload = this.#payload
+  ): boolean | undefined {
+    return Callback.validation.get(name)?.(result as boolean, value, payload);
   }
 }
