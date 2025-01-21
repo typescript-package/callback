@@ -9,28 +9,43 @@
 
 ## typescript-package/callback
 
-A lightweight TypeScript library to manage various callback functions.
-
 <!-- npm badge -->
 [![npm version][typescript-package-npm-badge-svg]][typescript-package-npm-badge]
 [![GitHub issues][typescript-package-badge-issues]][typescript-package-issues]
 [![GitHub license][typescript-package-badge-license]][typescript-package-license]
 
-<br>
+**Version:** v0.0.1
+
+A lightweight TypeScript library to manage various callback functions.
+
+## Overview
+
+The `Callback` class provides a collection of static methods to define various types of callbacks from `@typedly/callback` with optional default payload to simplify the customization.
+
+### Features
+
+- **Defining** the various type of callbacks from `@typedly/callback`.
+- Optional default **payload merging**.
+- Ability to **use the default types** from the `@typedly/context` for `context` and `@typedly/payload` for `payload`.
+
+###
+
+---
 
 ## Table of contents
 
-* [Installation](#installation)
-* [Api](#api)
-* [Git](#git)
-  * [Commit](#commit)
-  * [Versioning](#versioning)
-* [License](#license)
+- [Installation](#installation)
+- [Api](#api)
+- [Contributing](#contributing)
+- [Git](#git)
+  - [Commit](#commit)
+  - [Versioning](#versioning)
+- [License](#license)
 
 ## Installation
 
 ```bash
-npm install @typescript-package/callback
+npm install @typescript-package/callback --save-peer
 ```
 
 ## Api
@@ -38,27 +53,37 @@ npm install @typescript-package/callback
 ```typescript
 import {
    // Class.
-   // Type.
+   Callback
 } from '@typescript-package/callback';
 ```
+
+## Contributing
+
+Your contributions are valued! If you'd like to contribute, please feel free to submit a pull request. Help is always appreciated.
+
+### Code of Conduct
+
+By participating in this project, you agree to follow our **Code of Conduct**.
 
 ## GIT
 
 ### Commit
 
-* [AngularJS Git Commit Message Conventions][git-commit-angular]
-* [Karma Git Commit Msg][git-commit-karma]
-* [Conventional Commits][git-commit-conventional]
+Please follow the following commit message conventions:
+
+- [AngularJS Git Commit Message Conventions][git-commit-angular]
+- [Karma Git Commit Msg][git-commit-karma]
+- [Conventional Commits][git-commit-conventional]
 
 ### Versioning
 
-[Semantic Versioning 2.0.0][git-semver]
+The package follows [Semantic Versioning 2.0.0][git-semver] for all releases. The versioning format is:
 
 **Given a version number MAJOR.MINOR.PATCH, increment the:**
 
-* MAJOR version when you make incompatible API changes,
-* MINOR version when you add functionality in a backwards-compatible manner, and
-* PATCH version when you make backwards-compatible bug fixes.
+- MAJOR version when you make incompatible API changes,
+- MINOR version when you add functionality in a backwards-compatible manner, and
+- PATCH version when you make backwards-compatible bug fixes.
 
 Additional labels for pre-release and build metadata are available as extensions to the MAJOR.MINOR.PATCH format.
 
