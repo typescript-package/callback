@@ -8,8 +8,9 @@
     "access": "public",
     "registry": "https://registry.npmjs.org"
   },
-  "devDependencies": {},
-  "peerDependencies": {},
+  "peerDependencies": {
+    "@typedly/callback": "^1.0.0-beta.3"
+  },
   "scripts": {
     "prepublishOnly": "npm run pkg && npm run clean",
     "pkg": "npm pkg delete dependencies",
@@ -29,6 +30,7 @@
     "CommonCallback",
     "ErrorCallback",
     "FailureCallback",
+    "ProcessCallback",
     "ResultCallback",
     "StatusCallback",
     "SuccessCallback",
