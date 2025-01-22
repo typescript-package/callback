@@ -24,8 +24,6 @@ A lightweight TypeScript library to manage various callback functions.
 - Optional default **payload merging**.
 - Ability to **use the default types** from the `@typedly/context` for `context` and `@typedly/payload` for `payload`.
 
----
-
 ## Table of contents
 
 - [Installation](#installation)
