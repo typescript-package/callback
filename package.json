@@ -12,9 +12,9 @@
     "@typedly/callback": "^1.0.0-beta.3"
   },
   "scripts": {
-    "prepublishOnly": "npm run pkg && npm run clean",
-    "pkg": "npm pkg delete dependencies",
-    "clean": "npm pkg delete scripts"
+    "prepublishOnly": "npm install rimraf && npm run pkg && npm run clean",
+    "pkg": "npm pkg delete module fesm2022 dependencies",
+    "clean": "./node_modules/rimraf/dist/esm/bin.mjs ./fesm2022 ./node_modules && npm pkg delete scripts"
   },
   "repository": {
     "type": "git",
