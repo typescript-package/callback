@@ -38,7 +38,7 @@ export class Callback {
     defaultPayload?: Payload
   ): AsyncCallback<Result, Value, Payload, Return> {
     return async (result: Result, value: Value, payload: Payload = {} as Payload) => 
-      callback(result, value, {...(defaultPayload || {}), ...payload});
+      callback(result, value, this.#mergePayload<Payload>(payload, defaultPayload));
   }
 
   /**
@@ -48,10 +48,9 @@ export class Callback {
    * @template [Context=unknown] 
    * @template {object} [Payload=object] 
    * @template [Return=void] 
-   * @template [Message=string | ErrorMessage<Context, Payload>] 
    * @template {typeof Error} [Type=typeof Error] 
    * @param {Type} error 
-   * @param {Message} message 
+   * @param {(string | ErrorMessage<Context, Payload>)} message 
    * @param {boolean} [throwOnState=false] 
    * @param {ErrorCallback<Context, Payload, Return, Type>} callback 
    * @param {?Payload} [defaultPayload] 
@@ -61,17 +60,16 @@ export class Callback {
     Context = unknown,
     Payload extends object = object,
     Return = void,
-    Message = string | ErrorMessage<Context, Payload>,
     Type extends typeof Error = typeof Error,
   >(
     error: Type,
-    message: Message,
+    message: string | ErrorMessage<Context, Payload>,
     throwOnState: boolean = false,
     callback: ErrorCallback<Context, Payload, Return, Type>,
     defaultPayload?: Payload
   ): ErrorCallback<Context, Payload, Return, Type> {
-    return (context: Context, payload: Payload = {} as Payload) => {
-      const state = callback(context, {...(defaultPayload || {}), ...payload});
+    return (context: Context, payload: Payload = {} as Payload, message?: string | ErrorMessage<Context, Payload>, type?: Type) => {
+      const state = callback(context, {...(defaultPayload || {}), ...payload}, message, type);
       if (state === throwOnState) {
         throw new error(typeof message === "function" ? message(context, payload) : message);
       }
@@ -97,7 +95,7 @@ export class Callback {
     defaultPayload?: Payload
   ): FailureCallback<Value, Payload> {
     return (value: Value, payload: Payload = {} as Payload): void =>
-      callback(value, { ...(defaultPayload || {}), ...payload })
+      callback(value, this.#mergePayload<Payload>(payload, defaultPayload))
   }
 
   /**
@@ -121,7 +119,7 @@ export class Callback {
     defaultPayload?: Payload
   ): StatusCallback<Status, Value, Payload, Return> {
     return (status: Status, value: Value, payload: Payload = {} as Payload) =>
-      callback(status, value, {...(defaultPayload || {}), ...payload});
+      callback(status, value, this.#mergePayload<Payload>(payload, defaultPayload));
   }
   
   /**
@@ -160,7 +158,7 @@ export class Callback {
     defaultPayload?: Payload
   ): SuccessCallback<Value, Payload> {
     return (value: Value, payload: Payload = {} as Payload): void =>
-      callback(value, { ...(defaultPayload || {}), ...payload })
+      callback(value, this.#mergePayload<Payload>(payload, defaultPayload))
   }
 
   /**
