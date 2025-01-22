@@ -20,15 +20,9 @@ A lightweight TypeScript library to manage various callback functions.
 
 ## Overview
 
-The `Callback` class provides a collection of static methods to define various types of callbacks from `@typedly/callback` with optional default payload to simplify the customization.
-
-### Features
-
 - **Defining** the various type of callbacks from `@typedly/callback`.
 - Optional default **payload merging**.
 - Ability to **use the default types** from the `@typedly/context` for `context` and `@typedly/payload` for `payload`.
-
-###
 
 ---
 
@@ -37,6 +31,7 @@ The `Callback` class provides a collection of static methods to define various t
 - [Installation](#installation)
 - [Api](#api)
 - [Contributing](#contributing)
+- [Code of Conduct](code-of-conduct)
 - [Git](#git)
   - [Commit](#commit)
   - [Versioning](#versioning)
@@ -59,11 +54,11 @@ import {
 
 ## Contributing
 
-Your contributions are valued! If you'd like to contribute, please feel free to submit a pull request. Help is always appreciated.
+Your contributions are **valued**! If you'd like to contribute, please feel **free** to submit a pull request. Help is always appreciated.
 
-### Code of Conduct
+## Code of Conduct
 
-By participating in this project, you agree to follow our **Code of Conduct**.
+By participating in this project, you agree to follow **[Code of Conduct](https://www.contributor-covenant.org/version/2/1/code_of_conduct/)**.
 
 ## GIT
 
