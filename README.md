@@ -14,7 +14,7 @@
 [![GitHub issues][typescript-package-badge-issues]][typescript-package-issues]
 [![GitHub license][typescript-package-badge-license]][typescript-package-license]
 
-**Version:** v0.0.1
+**Version:** v0.0.1-beta
 
 A lightweight TypeScript library to manage various callback functions.
 
